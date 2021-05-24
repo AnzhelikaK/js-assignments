@@ -137,7 +137,8 @@ function isTriangle(a, b, c) {
  *
  */
 function doRectanglesOverlap(rect1, rect2) {
-    throw new Error('Not implemented');
+    return (!(((rect2.left + rect2.width) < rect1.left) || ((rect1.left + rect1.width) < rect2.left)) &&
+        !(((rect1.top + rect1.height) < rect2.top) || ((rect2.top + rect2.height) < rect1.top)))
 }
 
 
@@ -168,7 +169,7 @@ function doRectanglesOverlap(rect1, rect2) {
  *
  */
 function isInsideCircle(circle, point) {
-    throw new Error('Not implemented');
+    return Math.hypot(point.x - circle.center.x, point.y - circle.center.y) < circle.radius;
 }
 
 
@@ -184,7 +185,12 @@ function isInsideCircle(circle, point) {
  *   'entente' => null
  */
 function findFirstSingleChar(str) {
-    throw new Error('Not implemented');
+    for (let i = 0; i < str.length; i++) {
+        if ((str.slice(0, i).indexOf(str[i]) === -1) && (str.slice(i + 1).indexOf(str[i]) === -1)) {
+            return str[i];
+        }
+    }
+    return null;
 }
 
 
@@ -210,7 +216,11 @@ function findFirstSingleChar(str) {
  *
  */
 function getIntervalString(a, b, isStartIncluded, isEndIncluded) {
-    throw new Error('Not implemented');
+    let res = "";
+    res += (isStartIncluded && res.length === 0) ? "[" : "(";
+    res += a <= b ? `${a}, ${b}` : `${b}, ${a}`;
+    res += isEndIncluded ? "]" : ")";
+    return res;
 }
 
 
@@ -227,7 +237,7 @@ function getIntervalString(a, b, isStartIncluded, isEndIncluded) {
  * 'noon' => 'noon'
  */
 function reverseString(str) {
-    throw new Error('Not implemented');
+    return str.split("").reverse().join("");
 }
 
 
@@ -244,7 +254,7 @@ function reverseString(str) {
  *   34143 => 34143
  */
 function reverseInteger(num) {
-    throw new Error('Not implemented');
+    return Number.parseInt(reverseString(num.toString()));
 }
 
 
@@ -269,7 +279,20 @@ function reverseInteger(num) {
  *   4916123456789012 => false
  */
 function isCreditCardNumber(ccn) {
-    throw new Error('Not implemented');
+    let summa = 0;
+    let Num = ccn.toString();
+    let len = Num.length;
+    for (let i = 1; i <= len; i++) {
+        let p = Number(Num[len - i]);
+        if (i % 2 === 0) {
+            p *= 2;
+        }
+        if (p > 9) {
+            p -= 9;
+        }
+        summa += p;
+    }
+    return summa % 10 === 0;
 }
 
 
@@ -288,7 +311,10 @@ function isCreditCardNumber(ccn) {
  *   165536 (1+6+5+5+3+6 = 26,  2+6 = 8) => 8
  */
 function getDigitalRoot(num) {
-    throw new Error('Not implemented');
+    let summa = ('' + num).split("").reduce(function (prev, cur) {
+        return (+prev) + (+cur);
+    });
+    return summa > 9 ? getDigitalRoot(summa) : summa;
 }
 
 
@@ -314,7 +340,17 @@ function getDigitalRoot(num) {
  *   '{[(<{[]}>)]}' = true 
  */
 function isBracketsBalanced(str) {
-    throw new Error('Not implemented');
+    const start = ['[', '{', '(', '<'];
+    const end = [']', '}', ')', '>'];
+    const stack = [];
+    for (let i = 0; i < str.length; i++) {
+        if (start.indexOf(str[i]) !== -1) {
+            stack.push(str[i]);
+        } else if (start.indexOf(stack.pop()) !== end.indexOf(str[i])) {
+            return false;
+        }
+    }
+    return !(stack.length);
 }
 
 
@@ -350,7 +386,42 @@ function isBracketsBalanced(str) {
  *
  */
 function timespanToHumanString(startDate, endDate) {
-    throw new Error('Not implemented');
+    const different = endDate.getTime() - startDate.getTime(),
+        second = 1000,
+        minute = 60 * second,
+        hour = 60 * minute,
+        day = 24 * hour,
+        month = 30 * day,
+        year = 365 * day;
+
+    if (different <= 45 * second) {
+        return 'a few seconds ago';
+    } else if (different <= 90 * second) {
+        return 'a minute ago';
+    } else if (different <= 45 * minute) {
+        return genString(minute, 'minutes');
+    } else if (different <= 90 * minute) {
+        return 'an hour ago';
+    } else if (different <= 22 * hour) {
+        return genString(hour, 'hours');
+    } else if (different <= 36 * hour) {
+        return 'a day ago';
+    } else if (different <= 25 * day) {
+        return genString(day, 'days');
+    } else if (different <= 45 * day) {
+        return 'a month ago';
+    } else if (different <= 345 * day) {
+        return genString(month, 'months');
+    } else if (different <= 545 * day) {
+        return 'a year ago';
+    } else {
+        return genString(year, 'years');
+    }
+
+    function genString(period, periodStr) {
+        const diffPeriod = Math.floor(different / period) + ((different % period > period / 2) && 1);
+        return `${diffPeriod} ${periodStr} ago`;
+    }
 }
 
 
@@ -374,7 +445,7 @@ function timespanToHumanString(startDate, endDate) {
  *    365, 10 => '365'
  */
 function toNaryString(num, n) {
-    throw new Error('Not implemented');
+    return num.toString(n);
 }
 
 
@@ -391,7 +462,27 @@ function toNaryString(num, n) {
  *   ['/web/favicon.ico', '/web-scripts/dump', '/webalizer/logs'] => '/'
  */
 function getCommonDirectoryPath(pathes) {
-    throw new Error('Not implemented');
+    let r = '';
+    let slash = -1;
+    let strCommon = '';
+    let flag = false;
+    while (!flag) {
+        slash = pathes[0].indexOf('/', slash + 1);
+        if (slash === -1) {
+            break;
+        }
+        strCommon = pathes[0].slice(0, slash + 1);
+        for (let i = 1; i < pathes.length; i++) {
+            if (pathes[i].indexOf(strCommon) !== 0) {
+                flag = true;
+                break;
+            }
+        }
+        if (!flag) {
+            r = strCommon;
+        }
+    }
+    return r;
 }
 
 
@@ -414,7 +505,21 @@ function getCommonDirectoryPath(pathes) {
  *
  */
 function getMatrixProduct(m1, m2) {
-    throw new Error('Not implemented');
+    let result = Array.from({
+            length: m1.length
+        },
+        el => Array.from({
+            length: m2[0].length
+        }, () => 0));
+
+    for (let i = 0; i < result.length; i++) { // result rows
+        for (let j = 0; j < result[i].length; j++) { // result colls
+            for (let k = 0; k < m1[0].length; k++) { // m1 colls
+                result[i][j] += m1[i][k] * m2[k][j];
+            }
+        }
+    }
+    return result;
 }
 
 

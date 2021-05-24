@@ -296,7 +296,7 @@ function getSecondItems(arr) {
  *  [ 1,2,3,4,5 ] => [ 1, 2,2, 3,3,3, 4,4,4,4, 5,5,5,5,5 ]
  */
 function propagateItemsByPositionIndex(arr) {
-    throw new Error('Not implemented');
+    return arr.reduce((prev, curr, ind) => prev.concat(Array.from({length: ind + 1}, () => curr)), [])
 }
 
 
@@ -409,7 +409,7 @@ function getFalsyValuesCount(arr) {
  *    [ true, 0, 1, 'true' ], true => 1
  */
 function findAllOccurences(arr, item) {
-    throw new Error('Not implemented');
+    return arr.filter(el => el === item).length;
 }
 
 /**
@@ -453,7 +453,31 @@ function toStringList(arr) {
  *      { country: 'Russia',  city: 'Saint Petersburg' }
  */
 function sortCitiesArray(arr) {
-    throw new Error('Not implemented');
+    function compareLocation(a, b) {
+        if (a.country < b.country) {
+            return -1;
+        }
+
+        if (a.country > b.country) {
+            return 1;
+        }
+
+        if (a.country === b.country) {
+            if (a.city < b.city) {
+                return -1;
+            }
+
+            if (a.city > b.city) {
+                return 1;
+            }
+
+            if (a.city === b.city) {
+                return 0;
+            }
+        }
+    }
+
+    return arr.sort(compareLocation);
 }
 
 /**
@@ -475,7 +499,9 @@ function sortCitiesArray(arr) {
  *           [0,0,0,0,1]]
  */
 function getIdentityMatrix(n) {
-    throw new Error('Not implemented');
+    return Array.from({length: n},
+        (elem, ind) => Array.from({length: n}, (item, id) => id === ind));
+
 }
 
 /**
@@ -545,7 +571,11 @@ function distinct(arr) {
  *   }
  */
 function group(array, keySelector, valueSelector) {
-    throw new Error('Not implemented');
+    const map = new Map();
+    array.map((item) =>
+        map.set(keySelector(item), map.has(keySelector(item)) ?
+            map.get(keySelector(item)).concat([valueSelector(item)]) : [valueSelector(item)]));
+    return map;
 }
 
 
@@ -578,7 +608,7 @@ function selectMany(arr, childrenSelector) {
  *   [[[ 1, 2, 3]]], [ 0, 0, 1 ]      => 2        (arr[0][0][1])
  */
 function getElementByIndexes(arr, indexes) {
-    throw new Error('Not implemented');
+    return indexes.reduce((arrTemp, index) => arrTemp[index], arr);
 }
 
 
@@ -601,7 +631,16 @@ function getElementByIndexes(arr, indexes) {
  *
  */
 function swapHeadAndTail(arr) {
-    throw new Error('Not implemented');
+    if (arr.length === 1) return arr;
+    const length = arr.length;
+    let head = arr.slice(0, length / 2);
+    let tail = arr.slice(Math.ceil(length / 2));
+    if (length % 2 === 0) {
+        return tail.concat(head);
+    } else {
+        return tail.concat(arr[Math.floor(length / 2)], head);
+    }
+
 }
 
 

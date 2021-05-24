@@ -33,7 +33,14 @@
  *
  */
 function* get99BottlesOfBeer() {
-    throw new Error('Not implemented');
+    let bottle = (n => n === 1 ? `1 bottle` : `${n} bottles`);
+    for (let i = 99; i > 0; i--) {
+        yield `${bottle(i)} of beer on the wall, ${bottle(i)} of beer.`;
+        if (i > 1) yield `Take one down and pass it around, ${bottle(i - 1)} of beer on the wall.`;
+        else yield `Take one down and pass it around, no more bottles of beer on the wall.`;
+    }
+    yield 'No more bottles of beer on the wall, no more bottles of beer.';
+    yield 'Go to the store and buy some more, 99 bottles of beer on the wall.';
 }
 
 
@@ -93,7 +100,14 @@ function* getFibonacciSequence() {
  *
  */
 function* depthTraversalTree(root) {
-    throw new Error('Not implemented');
+    let v = [root];
+    while (v.length) {
+        let node = v.pop();
+        yield node;
+        if (node.children) {
+            v.push(...node.children.reverse());
+        }
+    }
 }
 
 
@@ -119,7 +133,13 @@ function* depthTraversalTree(root) {
  *
  */
 function* breadthTraversalTree(root) {
-    throw new Error('Not implemented');
+    let v = [root];
+    for (let node of v) {
+        yield node;
+        if (node.children) {
+            v.push(...node.children);
+        }
+    }
 }
 
 
@@ -137,7 +157,26 @@ function* breadthTraversalTree(root) {
  *   [ 1, 3, 5, ... ], [ -1 ] => [ -1, 1, 3, 5, ...]
  */
 function* mergeSortedSequences(source1, source2) {
-    throw new Error('Not implemented');
+    source1 = source1();
+    source2 = source2();
+    let i1 = source1.next().value,
+        i2 = source2.next().value;
+    while (i1 !== undefined || i2 !== undefined) {
+        if (i1 < i2 || i2 === undefined) {
+            yield i1;
+            i1 = source1.next().value;
+            if (i1 === undefined) {
+                source1.done = true;
+            }
+        }
+        if (i2 <= i1 || i1 === undefined) {
+            yield i2;
+            i2 = source2.next().value;
+            if (i1 === undefined) {
+                source2.done = true;
+            }
+        }
+    }
 }
 
 

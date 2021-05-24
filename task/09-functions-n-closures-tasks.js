@@ -111,9 +111,15 @@ function memoize(func) {
  * retryer() => 2
  */
 function retry(func, attempts) {
-    throw new Error('Not implemented');
-}
 
+    return function functionRetry() {
+        try {
+            return func.call(null);
+        } catch (e) {
+            return retry(func, --attempts)()
+        }
+    }
+}
 
 /**
  * Returns the logging wrapper for the specified method,
@@ -139,7 +145,15 @@ function retry(func, attempts) {
  *
  */
 function logger(func, logFunc) {
-    throw new Error('Not implemented');
+    return function () {
+        const argsStr = Array.from(arguments)
+            .map(arg => JSON.stringify(arg));
+
+        logFunc(`${func.name}(${argsStr}) starts`);
+        const result = func.apply(null, arguments);
+        logFunc(`${func.name}(${argsStr}) ends`);
+        return result;
+    };
 }
 
 
@@ -157,7 +171,11 @@ function logger(func, logFunc) {
  *   partialUsingArguments(fn, 'a','b','c','d')() => 'abcd'
  */
 function partialUsingArguments(fn) {
-    throw new Error('Not implemented');
+    let outerArgs = Array.from(arguments)
+        .slice(1);
+    return function () {
+        return fn.apply(null, outerArgs.concat(Array.from(arguments)));
+    };
 }
 
 
@@ -178,9 +196,10 @@ function partialUsingArguments(fn) {
  *   getId10() => 11
  */
 function getIdGeneratorFunction(startFrom) {
-    throw new Error('Not implemented');
+    return function () {
+        return startFrom++
+    };
 }
-
 
 module.exports = {
     getComposition: getComposition,
